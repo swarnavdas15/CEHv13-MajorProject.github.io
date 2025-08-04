@@ -7,10 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Calm Neutrals -->
-    <!-- Application Structure Plan: A dashboard-style SPA designed for intuitive data exploration. It starts with a high-level executive summary and overall risk score. The core is an interactive vulnerability section where users can filter findings by severity using a donut chart and buttons. This is followed by a comparative view of affected systems and concludes with a clear, prioritized list of remediation actions. This structure was chosen to guide the user from a broad understanding to specific details and actionable steps, which is more effective for digesting complex security data than a linear report. -->
-    <!-- Visualization & Content Choices: Overall Risk -> Goal: Inform -> Large Stat Card -> Justification: Immediately communicates the most critical takeaway. | Vulnerability Distribution -> Goal: Compare/Inform -> Donut Chart -> Interaction: Filters a detailed list -> Justification: Excellent for showing part-to-whole relationships of severity levels -> Library: Chart.js/Canvas. | Vulnerability Details -> Goal: Organize/Inform -> Interactive Cards -> Interaction: Click to expand -> Justification: Presents detailed information without overwhelming the user initially. -> Method: HTML/CSS/JS. | Vulnerabilities by System -> Goal: Compare -> Horizontal Bar Chart -> Interaction: Tooltips for details -> Justification: Clear, direct comparison of risk between assets -> Library: Chart.js/Canvas. | Recommendations -> Goal: Organize -> Prioritized List -> Justification: Provides clear, actionable steps for remediation -> Method: HTML/CSS. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -146,26 +143,26 @@
                 <div class="card p-6 border-l-4 border-red-600">
                     <h3 class="text-xl font-bold text-red-600 mb-2">Immediate Actions (Critical Priority)</h3>
                     <ul class="list-disc list-inside text-gray-700 space-y-2">
-                        <li>**Upgrade Unsupported Software:** Immediately upgrade the End-of-Life PHP version on `testphp.vulnweb.com` to a currently supported and patched version.</li>
-                        <li>**Secure Credential Storage:** Implement strong, one-way cryptographic hashing (e.g., Argon2, bcrypt) for all user passwords and utilize a PCI-DSS compliant solution for handling payment card information.</li>
-                        <li>**Fix SQL Injection Flaws:** Universally adopt parameterized queries (prepared statements) to prevent SQL injection vulnerabilities.</li>
-                        <li>**Enforce Least Privilege:** Drastically reduce the privileges of the `acuart@localhost` database user to only what is necessary for application functionality (SELECT, INSERT, UPDATE, DELETE).</li>
-                        <li>**Restrict Directory Access:** Remove public access to sensitive directories like `/CVS/`, `/admin/`, and `/secured/` on the web server.</li>
+                        <li><b>Upgrade Unsupported Software:</b> Immediately upgrade the End-of-Life PHP version on `testphp.vulnweb.com` to a currently supported and patched version.</li>
+                        <li><b>Secure Credential Storage:</b> Implement strong, one-way cryptographic hashing (e.g., Argon2, bcrypt) for all user passwords and utilize a PCI-DSS compliant solution for handling payment card information.</li>
+                        <li><b>Fix SQL Injection Flaws:</b> Universally adopt parameterized queries (prepared statements) to prevent SQL injection vulnerabilities.</li>
+                        <li><b>Enforce Least Privilege:</b> Drastically reduce the privileges of the `acuart@localhost` database user to only what is necessary for application functionality (SELECT, INSERT, UPDATE, DELETE).</li>
+                        <li><b>Restrict Directory Access:</b> Remove public access to sensitive directories like `/CVS/`, `/admin/`, and `/secured/` on the web server.</li>
                     </ul>
                 </div>
                  <div class="card p-6 border-l-4 border-amber-500">
                     <h3 class="text-xl font-bold text-amber-500 mb-2">Urgent Actions (High Priority)</h3>
                     <ul class="list-disc list-inside text-gray-700 space-y-2">
-                        <li>**Secure Cross-Domain Policies:** Restrict `crossdomain.xml` and `clientaccesspolicy.xml` to only trusted domains, removing wildcard entries.</li>
-                        <li>**Protect Database Metadata:** Configure database permissions to prevent the web application user from accessing sensitive `information_schema` or `sys` views.</li>
+                        <li><b>Secure Cross-Domain Policies:</b> Restrict `crossdomain.xml` and `clientaccesspolicy.xml` to only trusted domains, removing wildcard entries.</li>
+                        <li><b>Protect Database Metadata:</b> Configure database permissions to prevent the web application user from accessing sensitive `information_schema` or `sys` views.</li>
                     </ul>
                 </div>
                 <div class="card p-6 border-l-4 border-blue-500">
                     <h3 class="text-xl font-bold text-blue-500 mb-2">High Priority Actions (Medium)</h3>
                     <ul class="list-disc list-inside text-gray-700 space-y-2">
-                        <li>**Implement Authorization Checks:** Enforce strict server-side authorization to prevent IDOR vulnerabilities from predictable, auto-incrementing IDs.</li>
-                        <li>**Add HTTP Security Headers:** Implement `X-Frame-Options` and `X-Content-Type-Options` headers to protect against clickjacking and MIME sniffing attacks.</li>
-                        <li>**Enforce SMB Signing:** Require message signing on the internal SMB server (`192.168.43.170`) to prevent Man-in-the-Middle attacks.</li>
+                        <li><b>Implement Authorization Checks:</b> Enforce strict server-side authorization to prevent IDOR vulnerabilities from predictable, auto-incrementing IDs.</li>
+                        <li><b>Add HTTP Security Headers:</b> Implement `X-Frame-Options` and `X-Content-Type-Options` headers to protect against clickjacking and MIME sniffing attacks.</li>
+                        <li><b>Enforce SMB Signing:</b> Require message signing on the internal SMB server (`192.168.43.170`) to prevent Man-in-the-Middle attacks.</li>
                     </ul>
                 </div>
             </div>
@@ -175,6 +172,7 @@
 
     <footer class="text-center py-6 bg-gray-200 text-gray-600 text-sm">
         <p>Interactive Security Report. This is a visual representation of assessment findings.</p>
+        <p>Generated by - <b>Swarnav Das</b></p>
     </footer>
 
     <script>
