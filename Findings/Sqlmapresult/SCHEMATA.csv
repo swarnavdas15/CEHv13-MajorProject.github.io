@@ -1,0 +1,4 @@
+SQL_PATH,SCHEMA_NAME,CATALOG_NAME,DEFAULT_ENCRYPTION,DEFAULT_COLLATION_NAME,DEFAULT_CHARACTER_SET_NAME
+NULL,information_schema,def,NO,utf8_general_ci,utf8
+NULL,acuart,def,NO,utf8_unicode_ci,utf8
+

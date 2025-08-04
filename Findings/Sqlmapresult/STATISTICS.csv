@@ -1,0 +1,6 @@
+PACKED,NULLABLE,SUB_PART,COMMENT,EXPRESSION,INDEX_NAME,INDEX_TYPE,IS_VISIBLE,NON_UNIQUE,COLLATION,INDEX_SCHEMA,SEQ_IN_INDEX,TABLE_SCHEMA,TABLE_NAME,INDEX_COMMENT,TABLE_CATALOG,CARDINALITY,COLUMN_NAME
+NULL,<blank>,NULL,<blank>,NULL,PRIMARY,BTREE,YES,0,A,acuart,1,acuart,artists,<blank>,def,3,artist_id
+NULL,<blank>,NULL,<blank>,NULL,PRIMARY,BTREE,YES,0,A,acuart,1,acuart,categ,<blank>,def,4,cat_id
+NULL,<blank>,NULL,<blank>,NULL,PRIMARY,BTREE,YES,0,A,acuart,1,acuart,pictures,<blank>,def,7,pic_id
+NULL,<blank>,NULL,<blank>,NULL,PRIMARY,BTREE,YES,0,A,acuart,1,acuart,products,<blank>,def,3,id
+

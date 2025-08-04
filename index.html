@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Penetration Test Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: A dashboard-style SPA designed for intuitive data exploration. It starts with a high-level executive summary and overall risk score. The core is an interactive vulnerability section where users can filter findings by severity using a donut chart and buttons. This is followed by a comparative view of affected systems and concludes with a clear, prioritized list of remediation actions. This structure was chosen to guide the user from a broad understanding to specific details and actionable steps, which is more effective for digesting complex security data than a linear report. -->
+    <!-- Visualization & Content Choices: Overall Risk -> Goal: Inform -> Large Stat Card -> Justification: Immediately communicates the most critical takeaway. | Vulnerability Distribution -> Goal: Compare/Inform -> Donut Chart -> Interaction: Filters a detailed list -> Justification: Excellent for showing part-to-whole relationships of severity levels -> Library: Chart.js/Canvas. | Vulnerability Details -> Goal: Organize/Inform -> Interactive Cards -> Interaction: Click to expand -> Justification: Presents detailed information without overwhelming the user initially. -> Method: HTML/CSS/JS. | Vulnerabilities by System -> Goal: Compare -> Horizontal Bar Chart -> Interaction: Tooltips for details -> Justification: Clear, direct comparison of risk between assets -> Library: Chart.js/Canvas. | Recommendations -> Goal: Organize -> Prioritized List -> Justification: Provides clear, actionable steps for remediation -> Method: HTML/CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 100%;
+            max-width: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .severity-critical { background-color: #dc2626; color: white; }
+        .severity-high { background-color: #f59e0b; color: white; }
+        .severity-medium { background-color: #3b82f6; color: white; }
+        .severity-low { background-color: #10b981; color: white; }
+        .severity-informational { background-color: #6b7280; color: white; }
+        .nav-link {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .nav-link.active, .nav-link:hover {
+            background-color: #e5e7eb;
+        }
+        .filter-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .filter-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #6b7280;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Security Assessment Dashboard</h1>
+            <div class="hidden md:flex space-x-2">
+                <a href="#summary" class="nav-link active">Summary</a>
+                <a href="#vulnerabilities" class="nav-link">Vulnerabilities</a>
+                <a href="#systems" class="nav-link">Affected Systems</a>
+                <a href="#remediation" class="nav-link">Remediation</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="summary" class="mb-12">
+            <h2 class="text-3xl font-bold mb-4 text-center">Executive Summary</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 card p-6 flex flex-col justify-center items-center text-center border-t-8 border-red-600">
+                    <h3 class="text-lg font-semibold text-gray-500 mb-2">Overall Risk Rating</h3>
+                    <p class="text-6xl font-bold text-red-600">CRITICAL</p>
+                    <p class="mt-4 text-gray-600">A critical risk posture due to multiple severe, exploitable vulnerabilities across internal and external assets.</p>
+                </div>
+                <div class="md:col-span-2 card p-6">
+                    <h3 class="text-xl font-semibold mb-3">Assessment Overview</h3>
+                    <p class="text-gray-600 mb-4">This report summarizes the findings of a security assessment on the external web application `testphp.vulnweb.com` and the internal host `192.168.43.170`. The assessment identified a confluence of fundamental design flaws, including outdated software, insecure credential storage, and confirmed SQL injection vulnerabilities. These issues create a high likelihood of a complete system compromise, which could lead to significant data breaches and operational impact.</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                        <div>
+                            <p class="text-3xl font-bold text-red-600" id="total-critical">5</p>
+                            <p class="text-sm text-gray-500">Critical</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-amber-500" id="total-high">2</p>
+                            <p class="text-sm text-gray-500">High</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-blue-500" id="total-medium">5</p>
+                            <p class="text-sm text-gray-500">Medium</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-emerald-500" id="total-low">1</p>
+                            <p class="text-sm text-gray-500">Low</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vulnerabilities" class="mb-12">
+            <h2 class="text-3xl font-bold mb-2 text-center">Vulnerability Breakdown</h2>
+            <p class="text-center text-gray-600 mb-6">This section provides an interactive overview of all identified vulnerabilities. Click on a severity level in the chart or use the buttons below to filter the findings. Click on any finding to see more details.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                <div class="lg:col-span-1 card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4">Findings by Severity</h3>
+                    <div class="chart-container">
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="flex flex-wrap justify-center gap-2 mb-6" id="filter-buttons">
+                    </div>
+                    <div id="vulnerability-list" class="space-y-4">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="systems" class="mb-12">
+            <h2 class="text-3xl font-bold mb-2 text-center">Affected Systems Analysis</h2>
+            <p class="text-center text-gray-600 mb-6">A comparative view of the vulnerabilities discovered on each of the assessed systems. This helps prioritize remediation efforts based on the risk concentration on each asset.</p>
+            <div class="card p-6">
+                 <div class="chart-container h-64 md:h-80 w-full max-w-4xl">
+                    <canvas id="systemsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="remediation" class="mb-12">
+            <h2 class="text-3xl font-bold mb-2 text-center">Prioritized Remediation Plan</h2>
+            <p class="text-center text-gray-600 mb-6">The following are key, high-priority recommendations to mitigate the identified risks. Addressing these items will significantly improve the overall security posture.</p>
+            <div class="space-y-6">
+                <div class="card p-6 border-l-4 border-red-600">
+                    <h3 class="text-xl font-bold text-red-600 mb-2">Immediate Actions (Critical Priority)</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>**Upgrade Unsupported Software:** Immediately upgrade the End-of-Life PHP version on `testphp.vulnweb.com` to a currently supported and patched version.</li>
+                        <li>**Secure Credential Storage:** Implement strong, one-way cryptographic hashing (e.g., Argon2, bcrypt) for all user passwords and utilize a PCI-DSS compliant solution for handling payment card information.</li>
+                        <li>**Fix SQL Injection Flaws:** Universally adopt parameterized queries (prepared statements) to prevent SQL injection vulnerabilities.</li>
+                        <li>**Enforce Least Privilege:** Drastically reduce the privileges of the `acuart@localhost` database user to only what is necessary for application functionality (SELECT, INSERT, UPDATE, DELETE).</li>
+                        <li>**Restrict Directory Access:** Remove public access to sensitive directories like `/CVS/`, `/admin/`, and `/secured/` on the web server.</li>
+                    </ul>
+                </div>
+                 <div class="card p-6 border-l-4 border-amber-500">
+                    <h3 class="text-xl font-bold text-amber-500 mb-2">Urgent Actions (High Priority)</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>**Secure Cross-Domain Policies:** Restrict `crossdomain.xml` and `clientaccesspolicy.xml` to only trusted domains, removing wildcard entries.</li>
+                        <li>**Protect Database Metadata:** Configure database permissions to prevent the web application user from accessing sensitive `information_schema` or `sys` views.</li>
+                    </ul>
+                </div>
+                <div class="card p-6 border-l-4 border-blue-500">
+                    <h3 class="text-xl font-bold text-blue-500 mb-2">High Priority Actions (Medium)</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>**Implement Authorization Checks:** Enforce strict server-side authorization to prevent IDOR vulnerabilities from predictable, auto-incrementing IDs.</li>
+                        <li>**Add HTTP Security Headers:** Implement `X-Frame-Options` and `X-Content-Type-Options` headers to protect against clickjacking and MIME sniffing attacks.</li>
+                        <li>**Enforce SMB Signing:** Require message signing on the internal SMB server (`192.168.43.170`) to prevent Man-in-the-Middle attacks.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-6 bg-gray-200 text-gray-600 text-sm">
+        <p>Interactive Security Report. This is a visual representation of assessment findings.</p>
+    </footer>
+
+    <script>
+        const vulnerabilityData = [
+            { title: 'PHP Unsupported Version Detection', severity: 'Critical', affected: 'testphp.vulnweb.com', description: 'Web server is running an End-of-Life version of PHP (5.6.40-38), which no longer receives security patches. This makes it vulnerable to a wide range of known exploits, including RCE, SQLi, and XSS.' },
+            { title: 'Exposed Sensitive Directories and Files', severity: 'Critical', affected: 'testphp.vulnweb.com', description: 'Openly accessible directories such as /CVS/, /admin/, /secured/, and /vendor/ lead to source code disclosure, unauthorized administrative access, and sensitive data exposure.' },
+            { title: 'Insecure Storage of User Credentials', severity: 'Critical', affected: '192.168.43.170', description: 'User passwords in the `acuart.users` table are stored with a plaintext default value ("pass"). Credit card data is stored without proper encryption or tokenization, enabling account takeover and financial fraud.' },
+            { title: 'Confirmed SQL Injection', severity: 'Critical', affected: '192.168.43.170', description: 'Active, time-based blind SQL injection and information disclosure attempts were observed. Numerous text fields are susceptible to SQLi, allowing for potential data exfiltration and database compromise.' },
+            { title: 'Over-Privileged Database User', severity: 'Critical', affected: '192.168.43.170', description: 'The `acuart@localhost` user has excessive database privileges (e.g., DROP, ALTER, EXECUTE), violating the principle of least privilege and amplifying the impact of any compromise.' },
+            { title: 'Insecure Cross-Domain Policies', severity: 'High', affected: 'testphp.vulnweb.com', description: '`clientaccesspolicy.xml` and `crossdomain.xml` files contain wildcard entries, effectively disabling the Same-Origin Policy and exposing the application to CSRF and cross-domain data exfiltration attacks.' },
+            { title: 'Exposed Database Structures', severity: 'High', affected: 'testphp.vulnweb.com', description: 'Extensive internal database structure details are exposed via `sys` schema views, which significantly aids attackers in crafting targeted SQL injection attacks by providing a blueprint of the database.' },
+            { title: 'SMB Signing Not Required', severity: 'Medium', affected: '192.168.43.170', description: 'The internal SMB server does not require message signing, making it vulnerable to Man-in-the-Middle (MitM) attacks that could intercept or modify network traffic.' },
+            { title: 'Vulnerable Stored Routines', severity: 'Medium', affected: '192.168.43.170', description: 'System routines like `sys.execute_prepared_stmt` can be called by the over-privileged `acuart` user, creating a risk of privilege escalation or execution of arbitrary SQL commands.' },
+            { title: 'Predictable IDs Leading to IDOR', severity: 'Medium', affected: '192.168.43.170', description: 'Sequential, auto-incrementing primary keys are used, which can enable Insecure Direct Object Reference (IDOR) attacks if server-side authorization is not properly enforced.' },
+            { title: 'Missing HTTP Security Headers', severity: 'Medium', affected: 'testphp.vulnweb.com', description: 'The absence of `X-Frame-Options` and `X-Content-Type-Options` headers weakens client-side defenses against clickjacking and MIME type sniffing attacks.' },
+            { title: 'SMB Protocol Version 1 Enabled', severity: 'Medium', affected: '192.168.43.170', description: 'The internal host supports the outdated and insecure SMBv1 protocol. Microsoft strongly recommends disabling it due to its lack of modern security features and known vulnerabilities.'},
+            { title: 'ICMP Timestamp Request Disclosure', severity: 'Low', affected: 'Both', description: 'Both hosts respond to ICMP timestamp requests, disclosing the system date and time. This information could potentially aid attackers in time-based attacks.' },
+        ];
+
+        const severityOrder = ['Critical', 'High', 'Medium', 'Low', 'Informational'];
+        const severityColors = {
+            'Critical': '#dc2626',
+            'High': '#f59e0b',
+            'Medium': '#3b82f6',
+            'Low': '#10b981',
+            'Informational': '#6b7280'
+        };
+        const severityBgClasses = {
+            'Critical': 'bg-red-600',
+            'High': 'bg-amber-500',
+            'Medium': 'bg-blue-600',
+            'Low': 'bg-emerald-500',
+            'Informational': 'bg-gray-500'
+        };
+        const severityBorderClasses = {
+            'Critical': 'border-red-600',
+            'High': 'border-amber-500',
+            'Medium': 'border-blue-600',
+            'Low': 'border-emerald-500',
+            'Informational': 'border-gray-500'
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const vulnerabilityList = document.getElementById('vulnerability-list');
+            const filterButtonsContainer = document.getElementById('filter-buttons');
+            let activeFilter = 'All';
+
+            const severities = [...new Set(vulnerabilityData.map(v => v.severity))];
+            severities.sort((a, b) => severityOrder.indexOf(a) - severityOrder.indexOf(b));
+            const severityCounts = severities.reduce((acc, sev) => {
+                acc[sev] = vulnerabilityData.filter(v => v.severity === sev).length;
+                return acc;
+            }, {});
+
+            const createFilterButtons = () => {
+                const allButton = document.createElement('button');
+                allButton.textContent = `All (${vulnerabilityData.length})`;
+                allButton.className = `filter-btn px-4 py-2 rounded-full text-sm font-semibold text-white ${severityBgClasses['Informational']} active`;
+                allButton.dataset.severity = 'All';
+                filterButtonsContainer.appendChild(allButton);
+
+                severities.forEach(severity => {
+                    const button = document.createElement('button');
+                    button.textContent = `${severity} (${severityCounts[severity]})`;
+                    button.className = `filter-btn px-4 py-2 rounded-full text-sm font-semibold text-white ${severityBgClasses[severity]}`;
+                    button.dataset.severity = severity;
+                    filterButtonsContainer.appendChild(button);
+                });
+
+                filterButtonsContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        activeFilter = e.target.dataset.severity;
+                        updateActiveButton();
+                        renderVulnerabilities();
+                    }
+                });
+            };
+
+            const updateActiveButton = () => {
+                document.querySelectorAll('#filter-buttons button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.severity === activeFilter);
+                });
+            };
+
+            const renderVulnerabilities = () => {
+                vulnerabilityList.innerHTML = '';
+                const filteredData = (activeFilter === 'All')
+                    ? vulnerabilityData
+                    : vulnerabilityData.filter(v => v.severity === activeFilter);
+                
+                filteredData.sort((a, b) => severityOrder.indexOf(a.severity) - severityOrder.indexOf(b.severity));
+
+                if (filteredData.length === 0) {
+                    vulnerabilityList.innerHTML = '<p class="text-center text-gray-500">No vulnerabilities found for this severity level.</p>';
+                    return;
+                }
+
+                filteredData.forEach(vuln => {
+                    const card = document.createElement('div');
+                    card.className = `card p-4 cursor-pointer border-l-4 ${severityBorderClasses[vuln.severity]}`;
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-lg">${vuln.title}</h4>
+                                <p class="text-sm text-gray-500">Affected: ${vuln.affected}</p>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded-full ${severityBgClasses[vuln.severity]} text-white">${vuln.severity}</span>
+                        </div>
+                        <div class="description mt-2 text-gray-600 hidden">
+                            <p>${vuln.description}</p>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => {
+                        card.querySelector('.description').classList.toggle('hidden');
+                    });
+                    vulnerabilityList.appendChild(card);
+                });
+            };
+
+            const setupSeverityChart = () => {
+                const ctx = document.getElementById('severityChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: severities,
+                        datasets: [{
+                            data: severities.map(s => severityCounts[s]),
+                            backgroundColor: severities.map(s => severityColors[s]),
+                            borderColor: '#f8f9fa',
+                            borderWidth: 4,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    boxWidth: 12,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        onClick: (evt, elements) => {
+                            if (elements.length > 0) {
+                                const clickedIndex = elements[0].index;
+                                activeFilter = severities[clickedIndex];
+                                updateActiveButton();
+                                renderVulnerabilities();
+                            }
+                        }
+                    }
+                });
+            };
+
+            const setupSystemsChart = () => {
+                const systems = ['testphp.vulnweb.com', '192.168.43.170'];
+                const systemData = systems.map(system => {
+                    const counts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
+                    vulnerabilityData.forEach(v => {
+                        if (v.affected === system || v.affected === 'Both') {
+                            if (counts[v.severity] !== undefined) {
+                                counts[v.severity]++;
+                            }
+                        }
+                    });
+                    return counts;
+                });
+
+                const datasets = severityOrder.filter(s => s !== 'Informational').map(severity => ({
+                    label: severity,
+                    data: systemData.map(d => d[severity]),
+                    backgroundColor: severityColors[severity],
+                }));
+
+                const ctx = document.getElementById('systemsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: systems,
+                        datasets: datasets
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                stacked: true,
+                                title: { display: true, text: 'Number of Vulnerabilities' }
+                            },
+                            y: {
+                                stacked: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        }
+                    }
+                });
+            };
+
+            const setupNavScroll = () => {
+                const links = document.querySelectorAll('.nav-link');
+                const sections = document.querySelectorAll('main section');
+                
+                window.addEventListener('scroll', () => {
+                    let current = '';
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        if (pageYOffset >= sectionTop - 100) {
+                            current = section.getAttribute('id');
+                        }
+                    });
+
+                    links.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${current}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                });
+
+                links.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.querySelector(link.getAttribute('href')).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    });
+                });
+            };
+
+            createFilterButtons();
+            renderVulnerabilities();
+            setupSeverityChart();
+            setupSystemsChart();
+            setupNavScroll();
+        });
+    </script>
+</body>
+</html>

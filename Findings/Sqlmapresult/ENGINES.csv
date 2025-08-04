@@ -1,0 +1,11 @@
+XA,SUPPORT,ENGINE,COMMENT,SAVEPOINTS,TRANSACTIONS
+NULL,NO,FEDERATED,Federated MySQL storage engine,NULL,NULL
+NO,YES,MEMORY,"Hash based, stored in memory, useful for temporary tables",NO,NO
+NO,YES,PERFORMANCE_SCHEMA,Performance Schema,NO,NO
+NO,YES,MRG_MYISAM,Collection of identical MyISAM tables,NO,NO
+NO,YES,MyISAM,MyISAM storage engine,NO,NO
+NO,YES,PERFORMANCE_SCHEMA,Performance Schema,NO,NO
+NO,YES,MEMORY,"Hash based, stored in memory, useful for temporary tables",NO,NO
+NO,YES,CSV,CSV storage engine,NO,NO
+YES,DEFAULT,InnoDB,"Supports transactions, row-level locking, and foreign keys",YES,YES
+

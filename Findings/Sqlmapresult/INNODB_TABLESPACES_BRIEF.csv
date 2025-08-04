@@ -1,0 +1,14 @@
+FLAG,NAME,PATH,SPACE,SPACE_TYPE
+18432,innodb_system,ibdata1,0,System
+0,innodb_undo_001,./undo_001,4294967279,Single
+0,innodb_undo_002,./undo_002,4294967278,Single
+16417,sys/sys_config,./sys/sys_config.ibd,1,Single
+16417,acuart/artists,./acuart/artists.ibd,326426,Single
+16417,acuart/carts,./acuart/carts.ibd,326427,Single
+16417,acuart/categ,./acuart/categ.ibd,326428,Single
+16417,acuart/featured,./acuart/featured.ibd,326429,Single
+16417,acuart/guestbook,./acuart/guestbook.ibd,326430,Single
+16417,acuart/pictures,./acuart/pictures.ibd,326431,Single
+16417,acuart/users,./acuart/users.ibd,326432,Single
+16417,acuart/products,./acuart/products.ibd,326433,Single
+

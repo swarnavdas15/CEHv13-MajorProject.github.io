@@ -1,0 +1,20 @@
+GRANTEE,IS_GRANTABLE,TABLE_SCHEMA,TABLE_CATALOG,PRIVILEGE_TYPE
+'acuart'@'localhost',NO,acuart,def,SELECT
+'acuart'@'localhost',NO,acuart,def,INSERT
+'acuart'@'localhost',NO,acuart,def,UPDATE
+'acuart'@'localhost',NO,acuart,def,DELETE
+'acuart'@'localhost',NO,acuart,def,CREATE
+'acuart'@'localhost',NO,acuart,def,DROP
+'acuart'@'localhost',NO,acuart,def,REFERENCES
+'acuart'@'localhost',NO,acuart,def,INDEX
+'acuart'@'localhost',NO,acuart,def,ALTER
+'acuart'@'localhost',NO,acuart,def,CREATE TEMPORARY TABLES
+'acuart'@'localhost',NO,acuart,def,LOCK TABLES
+'acuart'@'localhost',NO,acuart,def,EXECUTE
+'acuart'@'localhost',NO,acuart,def,CREATE VIEW
+'acuart'@'localhost',NO,acuart,def,SHOW VIEW
+'acuart'@'localhost',NO,acuart,def,CREATE ROUTINE
+'acuart'@'localhost',NO,acuart,def,ALTER ROUTINE
+'acuart'@'localhost',NO,acuart,def,EVENT
+'acuart'@'localhost',NO,acuart,def,TRIGGER
+
